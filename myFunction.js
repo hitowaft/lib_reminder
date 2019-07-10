@@ -79,7 +79,7 @@ function myFunction() {
       each_return_day.setDate(each_return_day.getDate() - pre_alert_days);
       var date_to_pre_alert = each_return_day.toLocaleDateString();
 
-      if (each_return_day == today) {
+      if (each_return_day != today) {
         alert_items.pop();
         continue;
       }
