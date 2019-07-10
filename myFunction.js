@@ -1,6 +1,6 @@
 function myFunction() {
   // 何日まえにリマインドするかここで入力
-  var when_to_remind = 3;
+  var pre_alert_days = 3;
   var today = new Date().toLocaleDateString();
 
   var env_vars = ["URL", "ID", "ID_sel", "PASS", "PASS_sel", "Selector"];
@@ -66,29 +66,40 @@ function myFunction() {
     return_dates[i_date] = book_titles[i_title];
   }
 
-  var items = [];
+  var alert_items = [];
+  var pre_alert_items = [];
+  var the_day_alert_items = [];
   var item = return_dates;
 
   for (var i = 0; i < item.length; i++) {
     var content = item[i]
     .replace("<td class=\"nwrap\">", "").replace("</td>", "").replace("<strong>", "").replace("</strong></a><br>", " ");
     if (i % 2 != 0) {
-      date_to_return = new Date(content);
-      date_to_return.setDate(date_to_return.getDate() - when_to_remind);
-      var date_to_alert = date_to_return.toLocaleDateString();
+      each_return_day = new Date(content);
+      each_return_day.setDate(each_return_day.getDate() - pre_alert_days);
+      var date_to_pre_alert = each_return_day.toLocaleDateString();
 
-      if (today != date_to_alert) {
-        items.pop();
+      if (each_return_day == today) {
+        alert_items.pop();
+        continue;
+      }
+      if (today != date_to_pre_alert) {
+        pre_alert_items.pop();
         continue;
       }
       continue;
     }
-    items.push("・ " + [content]);
+    alert_items.push("・ " + [content]);
+    pre_alert_items.push("・ " + [content]);
   }
 
-  Logger.log(items);
-  if (items.length > 0) {
-    postSlack(items.length.toString() + "冊の本の締め切りが" + when_to_remind.toString() + "日後になりました。\\n\\n" + items.toString().replace(/,/g, "\n"));
+  if (alert_items.length > 0) {
+    postSlack(alert_items.length.toString() + "冊の本の締め切りは本日です。\\n\\n" + alert_items.toString().replace(/,/g, "\n"));
+  }
+
+  Logger.log(pre_alert_items);
+  if (pre_alert_items.length > 0) {
+    postSlack(pre_alert_items.length.toString() + "冊の本の締め切りが" + pre_alert_days.toString() + "日後になりました。\\n\\n" + pre_alert_items.toString().replace(/,/g, "\n"));
   }
 
 }
