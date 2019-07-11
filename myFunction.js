@@ -81,7 +81,6 @@ function myFunction() {
 
       if (each_return_day != today) {
         alert_items.pop();
-        continue;
       }
       if (today != date_to_pre_alert) {
         pre_alert_items.pop();
@@ -93,11 +92,13 @@ function myFunction() {
     pre_alert_items.push("・ " + [content]);
   }
 
+  Logger.log(pre_alert_items + alert_items);
+
+
   if (alert_items.length > 0) {
     postSlack(alert_items.length.toString() + "冊の本の締め切りは本日です。\\n\\n" + alert_items.toString().replace(/,/g, "\n"));
   }
 
-  Logger.log(pre_alert_items);
   if (pre_alert_items.length > 0) {
     postSlack(pre_alert_items.length.toString() + "冊の本の締め切りが" + pre_alert_days.toString() + "日後になりました。\\n\\n" + pre_alert_items.toString().replace(/,/g, "\n"));
   }
