@@ -3,7 +3,7 @@ function myFunction() {
   var pre_alert_days = 3;
   var today = new Date().toLocaleDateString();
 
-  var env_vars = ["URL", "ID", "ID_sel", "PASS", "PASS_sel", "Selector"];
+  var env_vars = ["URL", "ID", "ID_sel", "PASS", "PASS_sel", "Selector", "ACCESS_TOKEN"];
   var conf = {}
 
   for (var i = 0, l=env_vars.length; i < l; i++) {
@@ -94,24 +94,41 @@ function myFunction() {
 
   Logger.log(pre_alert_items + alert_items);
 
+  token = conf.ACCESS_TOKEN; //グローバル変数
 
   if (alert_items.length > 0) {
-    postSlack(alert_items.length.toString() + "冊の本の締め切りは本日です。\\n\\n" + alert_items.toString().replace(/,/g, "\n"));
+    // postSlack(alert_items.length.toString() + "冊の本の締め切りは本日です。\\n\\n" + alert_items.toString().replace(/,/g, "\n"));
+    var message = "\n" + alert_items.length.toString() + "冊の本の締め切りは本日です。\n\n" + alert_items.toString().replace(/,/g, "\n");
+    sendHttpPost(message);
   }
 
   if (pre_alert_items.length > 0) {
-    postSlack(pre_alert_items.length.toString() + "冊の本の締め切りが" + pre_alert_days.toString() + "日後になりました。\\n\\n" + pre_alert_items.toString().replace(/,/g, "\n"));
+    // postSlack(pre_alert_items.length.toString() + "冊の本の締め切りが" + pre_alert_days.toString() + "日後になりました。\\n\\n" + pre_alert_items.toString().replace(/,/g, "\n"));
+    var message = "\n" + pre_alert_items.length.toString() + "冊の本の締め切りが" + pre_alert_days.toString() + "日後になりました。\n\n" + pre_alert_items.toString().replace(/,/g, "\n");
+    sendHttpPost(message);
   }
 
 }
 
 // Slackへポストする関数
-function postSlack(text){
-  var slack_post_url = PropertiesService.getScriptProperties().getProperty("slack_post_url");
-  var options = {
-    "method" : "POST",
-    "headers": {"Content-type": "application/json"},
-    "payload" : '{"text":"' + text + '"}'
-  };
-  UrlFetchApp.fetch(slack_post_url, options);
+// function postSlack(text){
+//   var slack_post_url = PropertiesService.getScriptProperties().getProperty("slack_post_url");
+//   var options = {
+//     "method" : "POST",
+//     "headers": {"Content-type": "application/json"},
+//     "payload" : '{"text":"' + text + '"}'
+//   };
+//   UrlFetchApp.fetch(slack_post_url, options);
+// }
+
+function sendHttpPost(message){
+  var options =
+   {
+     "method"  : "post",
+     "payload" : "message=" + message,
+     "headers" : {"Authorization" : "Bearer "+ token}
+
+   };
+
+   UrlFetchApp.fetch("https://notify-api.line.me/api/notify",options);
 }
