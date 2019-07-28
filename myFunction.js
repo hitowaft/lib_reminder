@@ -1,6 +1,6 @@
 function myFunction() {
   // 何日まえにリマインドするかここで入力
-  var pre_alert_days = 3;
+  var pre_alert_days = 14;
   var today = new Date().toLocaleDateString();
 
   var env_vars = ["URL", "ID", "ID_sel", "PASS", "PASS_sel", "Selector", "ACCESS_TOKEN"];
@@ -49,7 +49,7 @@ function myFunction() {
  // 貸出期限の載ったページをフェッチ
  response = UrlFetchApp.fetch((target_URL), options).getContentText();
 
-  var bookTitleRegex = new RegExp(/<strong>(.+)<\/strong><\/a><br>(.+)/g);
+  var bookTitleRegex = new RegExp(/<strong>(.+)<\/strong><\/a><br>(.+)?/g);
   var dateRegex = new RegExp(/<td class="nwrap">(.+)<\/td>/g);
 
 
@@ -71,6 +71,7 @@ function myFunction() {
   var the_day_alert_items = [];
   var item = return_dates;
 
+  Logger.log(item);
   for (var i = 0; i < item.length; i++) {
     var content = item[i]
     .replace("<td class=\"nwrap\">", "").replace("</td>", "").replace("<strong>", "").replace("</strong></a><br>", " ");
@@ -92,7 +93,7 @@ function myFunction() {
     pre_alert_items.push("・ " + [content]);
   }
 
-  Logger.log(pre_alert_items + alert_items);
+  //Logger.log(pre_alert_items + alert_items);
 
   token = conf.ACCESS_TOKEN; //グローバル変数
 
